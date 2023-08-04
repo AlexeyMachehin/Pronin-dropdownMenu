@@ -37,6 +37,7 @@ export namespace Position {
     if (position === Position.TopLeft || position === Position.TopRight) {
       return TO_MAP_VERTICAL_COORDINATE[position];
     }
+
     return TO_MAP_DEFAULT_VERTICAL_COORDINATE[position];
   }
 
@@ -44,6 +45,7 @@ export namespace Position {
     if (position === Position.BottomLeft || position === Position.BottomRight) {
       return TO_MAP_VERTICAL_COORDINATE[position];
     }
+
     return TO_MAP_DEFAULT_VERTICAL_COORDINATE[position];
   }
 
@@ -51,6 +53,7 @@ export namespace Position {
     if (position === Position.BottomLeft || position === Position.TopLeft) {
       return TO_MAP_VERTICAL_COORDINATE[position];
     }
+
     return TO_MAP_DEFAULT_HORIZONTAL_COORDINATE[position];
   }
 
@@ -58,7 +61,7 @@ export namespace Position {
     if (position === Position.BottomRight || position === Position.TopRight) {
       return TO_MAP_VERTICAL_COORDINATE[position];
     }
+
     return TO_MAP_DEFAULT_HORIZONTAL_COORDINATE[position];
   }
-
 }

@@ -4,7 +4,7 @@ import React, {
   useEffect,
   JSXElementConstructor,
 } from 'react';
-import { Position } from './dropdown-position';
+import { Position } from './dropdownPositionTypes';
 import classes from './dropdownMenu.module.css';
 
 type HandlerClickEvent = () => void;
@@ -18,7 +18,6 @@ interface DropdownMenuProps {
 }
 
 export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
-  console.log(children);
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState(Position.BottomRight);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -35,7 +34,7 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     const spaceRight = window.innerWidth - triggerRect.right;
 
     let newPosition: Position;
-    
+
     if (spaceBottom >= dropdownRect.height || spaceTop < dropdownRect.height) {
       newPosition =
         spaceRight >= dropdownRect.width
@@ -45,10 +44,18 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
       newPosition =
         spaceRight >= dropdownRect.width ? Position.TopRight : Position.TopLeft;
     }
+
     setPosition(newPosition);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
+    if (
+      triggerRef.current?.offsetParent ===
+      (event.target as HTMLElement).offsetParent
+    ) {
+      return;
+    }
+
     if (
       dropdownRef.current &&
       !dropdownRef.current.contains(event.target as Node)
