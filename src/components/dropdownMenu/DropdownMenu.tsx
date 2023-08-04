@@ -4,7 +4,7 @@ import React, {
   useEffect,
   JSXElementConstructor,
 } from 'react';
-import { Position } from './dropdownPositionTypes';
+import { Position } from './dropdownPosition';
 import classes from './dropdownMenu.module.css';
 
 type HandlerClickEvent = () => void;
@@ -18,7 +18,8 @@ interface DropdownMenuProps {
 }
 
 export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenOnClick, setIsOpenOnClick] = useState(false);
+  const [isOpenOnHover, setIsOpenOnHover] = useState(false);
   const [position, setPosition] = useState(Position.BottomRight);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -60,24 +61,34 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
       dropdownRef.current &&
       !dropdownRef.current.contains(event.target as Node)
     ) {
-      setIsOpen(false);
+      setIsOpenOnClick(false);
     }
   };
 
   const handleTriggerClick = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
+    setIsOpenOnClick(prevIsOpen => !prevIsOpen);
+    setIsOpenOnHover(prevIsOpen => !prevIsOpen);
   };
 
   const handleMenuItemClick = (callback?: HandlerClickEvent) => {
     if (callback) {
       callback();
     }
+    
+    setIsOpenOnHover(false);
+    setIsOpenOnClick(false);
+  };
 
-    setIsOpen(false);
+  const handleMouseEnter = () => {
+    setIsOpenOnHover(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsOpenOnHover(false);
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpenOnClick || isOpenOnHover) {
       calculatePosition();
       document.addEventListener('mousedown', handleClickOutside);
     } else {
@@ -87,7 +98,7 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpenOnClick, isOpenOnHover]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,12 +113,15 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
   }, []);
 
   return (
-    <div className={classes.dropdownMenuContainer}>
+    <div
+      className={classes.dropdownMenuContainer}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
       <div ref={triggerRef} onClick={handleTriggerClick}>
         {trigger}
       </div>
 
-      {isOpen && (
+      {(isOpenOnClick || isOpenOnHover) && (
         <div
           className={classes.dropdownMenu}
           ref={dropdownRef}
