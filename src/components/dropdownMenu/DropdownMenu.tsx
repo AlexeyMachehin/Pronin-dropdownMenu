@@ -24,6 +24,29 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const triggerElement = triggerRef.current;
+    if (!triggerElement) return;
+
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          dropdownRef.current?.classList.remove(classes.displayNone);
+        } else {
+          dropdownRef.current?.classList.add(classes.displayNone);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection);
+
+    observer.observe(triggerElement);
+
+    return () => {
+      observer.unobserve(triggerElement);
+    };
+  }, []);
+
   const calculatePosition = () => {
     if (!triggerRef.current || !dropdownRef.current) return;
 
@@ -74,7 +97,7 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     if (callback) {
       callback();
     }
-    
+
     setIsOpenOnHover(false);
     setIsOpenOnClick(false);
   };
@@ -88,7 +111,10 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
   };
 
   useEffect(() => {
-    if (isOpenOnClick || isOpenOnHover) {
+    if (
+      isOpenOnClick
+      // || isOpenOnHover
+    ) {
       calculatePosition();
       document.addEventListener('mousedown', handleClickOutside);
     } else {
@@ -98,7 +124,10 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpenOnClick, isOpenOnHover]);
+  }, [
+    isOpenOnClick,
+    //  isOpenOnHover
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -121,7 +150,8 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
         {trigger}
       </div>
 
-      {(isOpenOnClick || isOpenOnHover) && (
+      {isOpenOnClick && (
+        // || isOpenOnHover
         <div
           className={classes.dropdownMenu}
           ref={dropdownRef}
