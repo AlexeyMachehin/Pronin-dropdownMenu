@@ -9,18 +9,23 @@ import classes from './dropdownMenu.module.css';
 
 type HandlerClickEvent = () => void;
 
+type DropdownMenuChild = React.ReactElement<
+  { onClick?: HandlerClickEvent },
+  JSXElementConstructor<{ onClick?: HandlerClickEvent }>
+>;
+
 interface DropdownMenuProps {
   trigger: React.ReactNode;
-  children: React.ReactElement<
-    { onClick?: HandlerClickEvent },
-    JSXElementConstructor<{ onClick?: HandlerClickEvent }>
-  >[];
+  children: DropdownMenuChild[] | DropdownMenuChild;
 }
 
 export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
   const [isOpenOnClick, setIsOpenOnClick] = useState(false);
   const [isOpenOnHover, setIsOpenOnHover] = useState(false);
-  const [position, setPosition] = useState(Position.BottomRight);
+  const [dropdownPosition, setDropdownPosition] = useState(
+    Position.BottomRight,
+  );
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -32,8 +37,9 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     const dropdownRect = dropdownRef.current.getBoundingClientRect();
 
     const spaceBottom = window.innerHeight - triggerRect.bottom;
-    const spaceTop = triggerRect.top;
     const spaceRight = window.innerWidth - triggerRect.right;
+
+    const spaceTop = triggerRect.top;
 
     let newPosition: Position;
 
@@ -47,7 +53,7 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
         spaceRight >= dropdownRect.width ? Position.TopRight : Position.TopLeft;
     }
 
-    setPosition(newPosition);
+    setDropdownPosition(newPosition);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -86,17 +92,10 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     setIsOpenOnClick(false);
   };
 
-  const handleMouseEnter = () => {
-    setIsOpenOnHover(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsOpenOnHover(false);
-  };
-
   useEffect(() => {
     if (isOpenOnClick || isOpenOnHover) {
       calculatePosition();
+      window.addEventListener('scroll', calculatePosition);
       document.addEventListener('mousedown', handleClickOutside);
 
       const dropdownMenuElements = document.querySelectorAll('#dropdownMenu');
@@ -110,25 +109,15 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mouseenter', handleHoverOutside);
+      window.removeEventListener('scroll', calculatePosition);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mouseenter', handleHoverOutside);
+      window.removeEventListener('scroll', calculatePosition);
     };
   }, [isOpenOnClick, isOpenOnHover]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      calculatePosition();
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   useEffect(() => {
     const triggerElement = triggerRef.current;
@@ -158,8 +147,8 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
       className={classes.dropdownMenuContainer}
       id="dropdownMenu"
       ref={containerRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}>
+      onMouseEnter={() => setIsOpenOnHover(true)}
+      onMouseLeave={() => setIsOpenOnHover(false)}>
       <div ref={triggerRef} onClick={handleTriggerClick}>
         {trigger}
       </div>
@@ -169,10 +158,10 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
           className={classes.dropdownMenu}
           ref={dropdownRef}
           style={{
-            top: Position.getTopCoordinate(position),
-            bottom: Position.getBottomCoordinate(position),
-            left: Position.getLeftCoordinate(position),
-            right: Position.getRightCoordinate(position),
+            top: Position.getTopCoordinate(dropdownPosition),
+            bottom: Position.getBottomCoordinate(dropdownPosition),
+            left: Position.getLeftCoordinate(dropdownPosition),
+            right: Position.getRightCoordinate(dropdownPosition),
           }}>
           {React.Children.map(children, (child, index) => {
             if (child) {
