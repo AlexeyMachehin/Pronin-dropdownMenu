@@ -1,3 +1,4 @@
+import { DropdownItem } from '../dropdownItem/DropdownItem';
 import { DropdownMenu } from '../dropdownMenu/DropdownMenu';
 import { Trigger } from '../trigger/Trigger';
 import classes from './testField.module.css';
@@ -6,85 +7,39 @@ export function TestField() {
   return (
     <div className={classes.testField}>
       <DropdownMenu trigger={<Trigger />}>
-        <div
-          className={classes.dropdownMenuItem}
-          onClick={() => {
-            console.log('"Поделиться в социальных сетях" clicked');
-          }}>
-          <div>Поделиться в социальных сетях</div>
-          <img
-            className={classes.dropdownMenuItemIcon}
-            src="/connect.png"
-            alt="connect icon"
-          />
-        </div>
-
-        <div
-          className={classes.dropdownMenuItem}
-          onClick={() => {
-            console.log('"Редактировать страницу" clicked');
-          }}>
-          <div>Редактировать страницу</div>
-          <img
-            className={classes.dropdownMenuItemIcon}
-            src="/write.png"
-            alt="write icon"
-          />
-        </div>
-
-        <div
-          className={classes.dropdownMenuItem}
-          onClick={() => {
-            console.log('"Удалить страницу" clicked');
-          }}>
-          <div>Удалить страницу</div>
-          <img
-            className={classes.dropdownMenuItemIcon}
-            src="/bin.png"
-            alt="bin icon"
-          />
-        </div>
+        <DropdownItem
+          value='Поделиться в социальных сетях" clicked'
+          label="Поделиться в социальных сетях"
+          iconUrl="/connect.png"
+        />
+        <DropdownItem
+          value='Редактировать страницу" clicked'
+          label="Редактировать страницу"
+          iconUrl="/write.png"
+        />
+        <DropdownItem
+          value='Удалить страницу" clicked'
+          label="Удалить страницу"
+          iconUrl="/bin.png"
+        />
       </DropdownMenu>
 
       <DropdownMenu trigger={<Trigger />}>
-        <div
-          className={classes.dropdownMenuItem}
-          onClick={() => {
-            console.log('"Поделиться в социальных сетях" clicked');
-          }}>
-          <div>Поделиться в социальных сетях</div>
-          <img
-            className={classes.dropdownMenuItemIcon}
-            src="/connect.png"
-            alt="seconnect icon"
-          />
-        </div>
-
-        <div
-          className={classes.dropdownMenuItem}
-          onClick={() => {
-            console.log('"Редактировать страницу" clicked');
-          }}>
-          <div>Редактировать страницу</div>
-          <img
-            className={classes.dropdownMenuItemIcon}
-            src="/write.png"
-            alt="write icon"
-          />
-        </div>
-
-        <div
-          className={classes.dropdownMenuItem}
-          onClick={() => {
-            console.log('"Удалить страницу" clicked');
-          }}>
-          <div>Удалить страницу</div>
-          <img
-            className={classes.dropdownMenuItemIcon}
-            src="/bin.png"
-            alt="bin icon"
-          />
-        </div>
+        <DropdownItem
+          value='Поделиться в социальных сетях" clicked'
+          label="Поделиться в социальных сетях"
+          iconUrl="/connect.png"
+        />
+        <DropdownItem
+          value='Редактировать страницу" clicked'
+          label="Редактировать страницу"
+          iconUrl="/write.png"
+        />
+        <DropdownItem
+          value='Удалить страницу" clicked'
+          label="Удалить страницу"
+          iconUrl="/bin.png"
+        />
       </DropdownMenu>
     </div>
   );

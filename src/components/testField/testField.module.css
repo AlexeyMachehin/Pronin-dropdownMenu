@@ -6,23 +6,3 @@
   width: 250%;
   background-color: #eee;
 }
-
-.dropdownMenuItem { 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.dropdownMenuItem:hover {
-  background-color: red;
-}
-
-.dropdownMenuItemIcon{
-  width: 20px;
-  height: 20px;
-}
