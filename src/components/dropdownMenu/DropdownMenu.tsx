@@ -23,29 +23,7 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
   const [position, setPosition] = useState(Position.BottomRight);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const triggerElement = triggerRef.current;
-    if (!triggerElement) return;
-
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          dropdownRef.current?.classList.remove(classes.displayNone);
-        } else {
-          dropdownRef.current?.classList.add(classes.displayNone);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(handleIntersection);
-
-    observer.observe(triggerElement);
-
-    return () => {
-      observer.unobserve(triggerElement);
-    };
-  }, []);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const calculatePosition = () => {
     if (!triggerRef.current || !dropdownRef.current) return;
@@ -88,9 +66,15 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     }
   };
 
+  const handleHoverOutside = (event: MouseEvent) => {
+    if (event.target !== containerRef.current) {
+      setIsOpenOnClick(false);
+    }
+  };
+
   const handleTriggerClick = () => {
     setIsOpenOnClick(prevIsOpen => !prevIsOpen);
-    setIsOpenOnHover(prevIsOpen => !prevIsOpen);
+    setIsOpenOnHover(false);
   };
 
   const handleMenuItemClick = (callback?: HandlerClickEvent) => {
@@ -111,23 +95,28 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
   };
 
   useEffect(() => {
-    if (
-      isOpenOnClick
-      // || isOpenOnHover
-    ) {
+    if (isOpenOnClick || isOpenOnHover) {
       calculatePosition();
       document.addEventListener('mousedown', handleClickOutside);
+
+      const dropdownMenuElements = document.querySelectorAll('#dropdownMenu');
+
+      dropdownMenuElements.forEach(element => {
+        element.addEventListener(
+          'mouseenter',
+          handleHoverOutside as EventListener,
+        );
+      });
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mouseenter', handleHoverOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mouseenter', handleHoverOutside);
     };
-  }, [
-    isOpenOnClick,
-    //  isOpenOnHover
-  ]);
+  }, [isOpenOnClick, isOpenOnHover]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -141,17 +130,41 @@ export function DropdownMenu({ trigger, children }: DropdownMenuProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const triggerElement = triggerRef.current;
+    if (!triggerElement) return;
+
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          dropdownRef.current?.classList.remove(classes.displayNone);
+        } else {
+          dropdownRef.current?.classList.add(classes.displayNone);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection);
+
+    observer.observe(triggerElement);
+
+    return () => {
+      observer.unobserve(triggerElement);
+    };
+  }, []);
+
   return (
     <div
       className={classes.dropdownMenuContainer}
+      id="dropdownMenu"
+      ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <div ref={triggerRef} onClick={handleTriggerClick}>
         {trigger}
       </div>
 
-      {isOpenOnClick && (
-        // || isOpenOnHover
+      {(isOpenOnClick || isOpenOnHover) && (
         <div
           className={classes.dropdownMenu}
           ref={dropdownRef}
