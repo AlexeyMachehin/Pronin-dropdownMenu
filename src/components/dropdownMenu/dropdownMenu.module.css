@@ -1,0 +1,20 @@
+.dropdownMenuContainer {
+  position: relative;
+}
+
+.dropdownMenu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  max-width: 260px;
+  padding: 20px;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid black;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.displayNone {
+  display: none;
+}
